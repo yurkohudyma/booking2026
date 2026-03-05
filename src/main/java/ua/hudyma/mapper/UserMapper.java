@@ -15,7 +15,15 @@ public class UserMapper extends BaseMapper<UserRespDto, User, UserReqDto>{
 
     @Override
     public UserRespDto toDto(User user) {
-        return null;
+        return new UserRespDto(
+                user.getId(),
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getGeniusLevel().name(),
+                user.getUserType().name()
+        );
     }
 
     @Override

@@ -2,11 +2,9 @@ package ua.hudyma.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ua.hudyma.dto.UserReqDto;
+import ua.hudyma.dto.UserRespDto;
 import ua.hudyma.service.UserService;
 
 @RestController
@@ -20,6 +18,11 @@ public class UserController {
     public ResponseEntity<String> createUser (@RequestBody UserReqDto dto){
         userService.createUser(dto);
         return ResponseEntity.ok("User created");
+    }
+
+    @GetMapping
+    public ResponseEntity<UserRespDto> getUser (@RequestParam String userId){
+        return ResponseEntity.ok(userService.getUserDto(userId));
     }
 
 }

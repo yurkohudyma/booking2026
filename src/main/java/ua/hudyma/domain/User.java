@@ -33,7 +33,7 @@ public class User {
     private Sex sex;
 
     @Column(unique = true)
-    private String email; //generate from name
+    private String email;
 
     private String name;
 
@@ -60,5 +60,11 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Transaction> transactionList = new ArrayList<>();
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Property> propertyList = new ArrayList<>();
 
 }

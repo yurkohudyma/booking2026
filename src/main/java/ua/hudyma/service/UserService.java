@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import ua.hudyma.domain.User;
 import ua.hudyma.dto.UserReqDto;
+import ua.hudyma.dto.UserRespDto;
 import ua.hudyma.mapper.UserMapper;
 import ua.hudyma.repository.UserRepository;
 
@@ -16,8 +17,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper mapper;
 
-    public User createUser (UserReqDto dto){
-        return userRepository.save(mapper.toEntity(dto));
+    public void createUser (UserReqDto dto){
+        userRepository.save(mapper.toEntity(dto));
+    }
+    
+    public User getUser (Long id) {
+        return userRepository.findById(id).orElseThrow();
     }
 
+    public User getUser (String userId) {
+        return userRepository.findByUserId(userId).orElseThrow();
+    }
+    
+    public UserRespDto getUserDto (String userId){
+        var user = userRepository.findByUserId(userId).orElseThrow();
+        return mapper.toDto(user);
+    }
 }
