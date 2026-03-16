@@ -7,6 +7,8 @@ import ua.hudyma.dto.PropertyReqDto;
 import ua.hudyma.dto.PropertyRespDto;
 import ua.hudyma.service.UserService;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, PropertyReqDto>{
@@ -17,8 +19,10 @@ public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, Proper
     public PropertyRespDto toDto(Property property) {
         return new PropertyRespDto(
                 property.getId(),
+                property.getName(),
                 property.getPropertyId(),
                 property.getDescription(),
+                property.getPropertyType(),
                 property.getAddress(),
                 property.getGeolocation(),
                 property.getRating(),
@@ -38,6 +42,7 @@ public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, Proper
         property.setAddress(dto.address());
         property.setUser(user);
         property.setGeolocation(dto.geolocation());
+        property.setRating(BigDecimal.ZERO);
         return property;
     }
 }

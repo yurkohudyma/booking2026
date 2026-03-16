@@ -10,6 +10,4 @@ public record PropertyReqDto(
         String address,
         Geolocation geolocation
 
-) {
-
-}
+) {}

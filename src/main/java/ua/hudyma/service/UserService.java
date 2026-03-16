@@ -22,11 +22,15 @@ public class UserService {
     }
     
     public User getUser (Long id) {
-        return userRepository.findById(id).orElseThrow();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException
+                        ("User " + id + " not found"));
     }
 
     public User getUser (String userId) {
-        return userRepository.findByUserId(userId).orElseThrow();
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException
+                ("User " + userId + " not found"));
     }
     
     public UserRespDto getUserDto (String userId){

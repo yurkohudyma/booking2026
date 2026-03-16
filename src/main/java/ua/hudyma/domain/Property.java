@@ -49,7 +49,8 @@ public class Property {
     @Column(columnDefinition = "json", name = "geolocation")
     private Geolocation geolocation;
 
-    private BigDecimal rating; //to be recalculated
+    private BigDecimal rating = BigDecimal.ZERO;
+    //to be recalculated
     // upon visitors review assessment
 
 
