@@ -20,7 +20,7 @@ public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, Proper
         return new PropertyRespDto(
                 property.getId(),
                 property.getName(),
-                property.getPropertyId(),
+                property.getPropertyCode(),
                 property.getDescription(),
                 property.getPropertyType(),
                 property.getAddress(),

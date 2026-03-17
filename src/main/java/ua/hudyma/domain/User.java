@@ -67,4 +67,10 @@ public class User {
             orphanRemoval = true)
     private List<Property> propertyList = new ArrayList<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Booking> bookingList = new ArrayList<>();
+
 }

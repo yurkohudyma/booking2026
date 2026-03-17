@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
-    Optional<Property> findByPropertyId(String propertyId);
+    Optional<Property> findByPropertyCode(String propertyId);
 
 }

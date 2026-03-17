@@ -1,5 +1,14 @@
 package ua.hudyma.dto;
 
-public record RoomRespDto() {
+import java.math.BigDecimal;
+
+public record RoomRespDto(
+        Long roomId,
+        String roomCode,
+        BigDecimal roomCost,
+        String propertyCode
+
+
+) {
 
 }

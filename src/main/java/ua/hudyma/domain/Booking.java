@@ -2,6 +2,7 @@ package ua.hudyma.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,6 +11,7 @@ import ua.hudyma.enums.BookingStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static ua.hudyma.util.IdGenerator.generateId;
 
@@ -17,12 +19,13 @@ import static ua.hudyma.util.IdGenerator.generateId;
 @Table(name = "bookings")
 @Data
 public class Booking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NaturalId
-    private String propertyId = generateId(5,10);
+    private String bookingCode = generateId(5, 10);
 
     @CreationTimestamp
     private LocalDateTime createdOn;
@@ -41,6 +44,10 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "property_id")
     private Property property;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
     Integer additionalVisitorsCount = 0;
 

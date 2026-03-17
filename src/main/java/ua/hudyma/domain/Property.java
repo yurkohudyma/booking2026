@@ -14,6 +14,7 @@ import ua.hudyma.enums.PropertyType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ua.hudyma.util.IdGenerator.generateId;
@@ -27,7 +28,7 @@ public class Property {
     private Long id;
 
     @NaturalId
-    private String propertyId = generateId(4,8);
+    private String propertyCode = generateId(4,8);
 
     private String name;
 
@@ -46,8 +47,6 @@ public class Property {
     @JoinColumn(name = "user_id")
     private User user;
 
-
-
     private String address;
 
     private LocalTime checkin;
@@ -65,13 +64,13 @@ public class Property {
     @OneToMany(mappedBy = "property",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<Booking> bookingList;
+    private List<Booking> bookingList = new ArrayList<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "property",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<Room> roomList;
+    private List<Room> roomList = new ArrayList<>();
 
 
 
