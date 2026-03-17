@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.hudyma.domain.Property;
 import ua.hudyma.dto.PropertyReqDto;
 import ua.hudyma.dto.PropertyRespDto;
 import ua.hudyma.mapper.PropertyMapper;
@@ -11,6 +12,7 @@ import ua.hudyma.mapper.UserMapper;
 import ua.hudyma.repository.PropertyRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +38,11 @@ public class PropertyService {
                 .stream()
                 .map(mapper::toDto)
                 .toList();
-
     }
 
+    public Property getProperty(String propertyId) {
+        return propertyRepository.findByPropertyId(propertyId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Property" + propertyId + " NOT found"));
+    }
 }

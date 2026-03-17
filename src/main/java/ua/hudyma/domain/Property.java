@@ -2,6 +2,7 @@ package ua.hudyma.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.NaturalId;
@@ -12,6 +13,8 @@ import ua.hudyma.enums.PropertyType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 import static ua.hudyma.util.IdGenerator.generateId;
 
@@ -43,15 +46,33 @@ public class Property {
     @JoinColumn(name = "user_id")
     private User user;
 
+
+
     private String address;
+
+    private LocalTime checkin;
+
+    private LocalTime checkout;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "json", name = "geolocation")
     private Geolocation geolocation;
 
     private BigDecimal rating = BigDecimal.ZERO;
-    //to be recalculated
-    // upon visitors review assessment
+    //to be recalculated upon visitors review assessment
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "property",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Booking> bookingList;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "property",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Room> roomList;
+
 
 
 }
