@@ -33,7 +33,7 @@ public class Booking {
     @UpdateTimestamp
     private LocalDateTime updatedOn;
 
-    private LocalDate start = LocalDate.now().plusDays(1);
+    private LocalDate start;
 
     private LocalDate finish;
 

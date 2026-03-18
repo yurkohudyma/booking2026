@@ -21,5 +21,4 @@ public class BookingController {
             @RequestBody BookingReqDto dto){
         return ResponseEntity.ok(bookingService.createBooking(dto));
     }
-
 }

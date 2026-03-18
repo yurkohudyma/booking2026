@@ -8,6 +8,5 @@ public record PropertyReqDto(
         PropertyType propertyType,
         String ownerId,
         String address,
-        Geolocation geolocation
-
-) {}
+        Geolocation geolocation)
+{}

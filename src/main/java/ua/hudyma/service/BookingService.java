@@ -13,9 +13,10 @@ import ua.hudyma.repository.BookingRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
+
+import static java.time.LocalTime.now;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,10 @@ public class BookingService {
         }
         var maxCapacity = room.getMaxVisitorsCapacity();
         checkCapacity(dto, maxCapacity);
-        checkRoomAvailability(room, dto.start());
+        var start = dto.start() == null ? LocalDate.now().plusDays(1) : dto.start();
+        var finish = dto.finish();
+        checkDatesConsistency(dto);
+        checkRoomAvailability(room, start, finish);
         var visitorsCount = dto.visitorsCount();
         var roomCost = room.getCost();
         var booking = bookingMapper.toEntity(dto);
@@ -61,6 +65,15 @@ public class BookingService {
         room.getBookingList().add(booking);
         return bookingMapper.toDto(booking);
     }
+    private static void checkDatesConsistency(BookingReqDto dto) {
+        if (dto.start() == null) throw new IllegalArgumentException("Start date is not provided");
+        else if (dto.finish() == null) throw new IllegalArgumentException("Finish date is not provided");
+        else if (dto.start().isEqual(dto.finish())) throw new IllegalArgumentException
+                ("Start and finish date shall at least differ by 1 day");
+        else if (dto.finish().isBefore(dto.start())) {
+            throw new IllegalArgumentException("Finish date shall not be prior to start");
+        }
+    }
 
     private static Long calculationBookingDuration(LocalDate start, LocalDate finish) {
         return ChronoUnit.DAYS.between(start, finish);
@@ -71,18 +84,19 @@ public class BookingService {
             throw new IllegalArgumentException("Insufficient visitors: " +
                     "requested " + dto.visitorsCount() + ", while available " +
                     maxCapacity);
-        }
-    }
+        }    }
 
-    private static void checkRoomAvailability(Room room, LocalDate start) {
-        Predicate<Booking> dateIsOverbooked = booking ->
-                booking.getStart().isBefore(start) ||
-                        booking.getStart().isEqual(start);
+    private static void checkRoomAvailability(Room room, LocalDate reqStart, LocalDate reqFinish) {
+        Predicate<Booking> roomIsOverbooked = booking ->
+                booking.getStart().isBefore(reqStart) ||
+                booking.getStart().isEqual(reqStart) &&
+                booking.getFinish().isAfter(reqFinish) ||
+                booking.getFinish().isEqual(reqFinish);
         if (room.getBookingList()
                 .stream()
-                .anyMatch(dateIsOverbooked))
-            throw new IllegalArgumentException("Room " + room.getRoomCode() + " is already booked on " + start
-            );
+                .anyMatch(roomIsOverbooked))
+            throw new IllegalArgumentException("Room " + room.getRoomCode() +
+                    " is already booked from " + reqStart + " till " + reqFinish);
         //in real frontend logic, there would be no necessity to check room availability
         //as client would have been proposed only vacant ones
     }
