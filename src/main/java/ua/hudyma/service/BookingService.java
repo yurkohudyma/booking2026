@@ -38,16 +38,14 @@ public class BookingService {
         var property = propertyService.getProperty(dto.propertyCode());
         var user = userService.getUser(dto.userId());
         var room = roomService.getRoom(dto.roomCode());
-        if (!property.getRoomList().contains(room)){
+        if (!property.getRoomList().contains(room)) {
             throw new IllegalArgumentException("Requested room " + room.getRoomCode() +
                     " does NOT belong to property " + property.getName());
         }
         var maxCapacity = room.getMaxVisitorsCapacity();
         checkCapacity(dto, maxCapacity);
-        var start = dto.start() == null ? LocalDate.now().plusDays(1) : dto.start();
-        var finish = dto.finish();
         checkDatesConsistency(dto);
-        checkRoomAvailability(room, start, finish);
+        checkRoomAvailability(room, dto);
         var visitorsCount = dto.visitorsCount();
         var roomCost = room.getCost();
         var booking = bookingMapper.toEntity(dto);
@@ -65,6 +63,7 @@ public class BookingService {
         room.getBookingList().add(booking);
         return bookingMapper.toDto(booking);
     }
+
     private static void checkDatesConsistency(BookingReqDto dto) {
         if (dto.start() == null) throw new IllegalArgumentException("Start date is not provided");
         else if (dto.finish() == null) throw new IllegalArgumentException("Finish date is not provided");
@@ -84,20 +83,26 @@ public class BookingService {
             throw new IllegalArgumentException("Insufficient visitors: " +
                     "requested " + dto.visitorsCount() + ", while available " +
                     maxCapacity);
-        }    }
+        }
+    }
 
-    private static void checkRoomAvailability(Room room, LocalDate reqStart, LocalDate reqFinish) {
+    private static void checkRoomAvailability(Room room, BookingReqDto dto) {
+        var reqStart = dto.start();
+        var reqFinish = dto.finish();
         Predicate<Booking> roomIsOverbooked = booking ->
                 booking.getStart().isBefore(reqStart) ||
-                booking.getStart().isEqual(reqStart) &&
-                booking.getFinish().isAfter(reqFinish) ||
-                booking.getFinish().isEqual(reqFinish);
-        if (room.getBookingList()
+                        booking.getStart().isEqual(reqStart) &&
+                                booking.getFinish().isAfter(reqFinish) ||
+                        booking.getFinish().isEqual(reqFinish);
+        var existingBooking = room.getBookingList()
                 .stream()
-                .anyMatch(roomIsOverbooked))
+                .filter(roomIsOverbooked)
+                .findFirst();
+        if (existingBooking.isPresent()) {
+            var existBookingOpt = existingBooking.get();
             throw new IllegalArgumentException("Room " + room.getRoomCode() +
-                    " is already booked from " + reqStart + " till " + reqFinish);
-        //in real frontend logic, there would be no necessity to check room availability
-        //as client would have been proposed only vacant ones
+                    " is already booked from " + existBookingOpt.getStart() + " till " +
+                    existBookingOpt.getFinish() + " by " + existBookingOpt.getUser().getName());
+        }
     }
 }
