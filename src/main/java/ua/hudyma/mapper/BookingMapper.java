@@ -3,13 +3,9 @@ package ua.hudyma.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ua.hudyma.domain.Booking;
-import ua.hudyma.domain.User;
 import ua.hudyma.dto.BookingReqDto;
 import ua.hudyma.dto.BookingRespDto;
-import ua.hudyma.enums.BookingStatus;
-import ua.hudyma.service.PropertyService;
 import ua.hudyma.service.RoomService;
-import ua.hudyma.service.UserService;
 
 import static ua.hudyma.enums.BookingStatus.CONFIRMED;
 

@@ -71,6 +71,8 @@ public class BookingService {
                 ("Start and finish date shall at least differ by 1 day");
         else if (dto.finish().isBefore(dto.start())) {
             throw new IllegalArgumentException("Finish date shall not be prior to start");
+        } else if (dto.start().isBefore(LocalDate.now()) || dto.finish().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Start and-or finish dates cannot be in the past");
         }
     }
 
@@ -90,10 +92,8 @@ public class BookingService {
         var reqStart = dto.start();
         var reqFinish = dto.finish();
         Predicate<Booking> roomIsOverbooked = booking ->
-                booking.getStart().isBefore(reqStart) ||
-                        booking.getStart().isEqual(reqStart) &&
-                                booking.getFinish().isAfter(reqFinish) ||
-                        booking.getFinish().isEqual(reqFinish);
+                booking.getStart().isBefore(reqFinish) &&
+                        booking.getFinish().isAfter(reqStart);
         var existingBooking = room.getBookingList()
                 .stream()
                 .filter(roomIsOverbooked)
