@@ -17,8 +17,6 @@ import ua.hudyma.service.RoomService;
 @RequestMapping("/rooms")
 public class RoomController {
 
-    private final RoomRepository roomRepository;
-    private final RoomMapper roomMapper;
     private final RoomService roomService;
 
     @PostMapping

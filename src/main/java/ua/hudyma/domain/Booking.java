@@ -49,6 +49,9 @@ public class Booking {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @OneToOne(mappedBy = "booking")
+    private Review review;
+
     Integer additionalVisitorsCount = 0;
 
     @Enumerated(value = EnumType.STRING)

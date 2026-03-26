@@ -14,10 +14,18 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reviewId = generateId(4,8);
+    private String reviewCode = generateId(4,8);
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
+    Integer rating;
+
+    String details;
 
 }

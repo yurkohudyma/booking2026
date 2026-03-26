@@ -33,6 +33,15 @@ public class BookingService {
 
     private final UserService userService;
 
+    public Booking getBooking(String bookingCode) {
+        return bookingRepository
+                .findByBookingCode(bookingCode)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Booking " + bookingCode + " not found")
+                );
+    }
+
     @Transactional
     public BookingRespDto createBooking(BookingReqDto dto) {
         var property = propertyService.getProperty(dto.propertyCode());
@@ -105,4 +114,5 @@ public class BookingService {
                     existBookingOpt.getFinish() + " by " + existBookingOpt.getUser().getName());
         }
     }
+
 }
