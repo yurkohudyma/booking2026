@@ -49,8 +49,11 @@ public class Booking {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne(mappedBy = "booking")
-    private Review review;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "booking",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Review> reviewList;
 
     Integer additionalVisitorsCount = 0;
 

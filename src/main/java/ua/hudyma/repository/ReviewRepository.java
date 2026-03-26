@@ -5,4 +5,6 @@ import ua.hudyma.domain.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    boolean existsByUser_UserId(String userId);
+
 }
