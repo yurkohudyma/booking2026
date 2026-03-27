@@ -68,10 +68,10 @@ public class PropertyService {
         return propertyRepository
                 .findAll()
                 .stream()
-                .filter(property -> property.getAddress().split(",")[1].strip().equals(city))
-                //todo переробити предикат
+                .filter(property -> extractAddressElement(1)
+                        .apply(property.getAddress())
+                        .equals(city))
                 .map(mapper::toDto)
                 .toList();
     }
-
 }
