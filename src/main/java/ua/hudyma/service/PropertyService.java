@@ -11,6 +11,7 @@ import ua.hudyma.mapper.PropertyMapper;
 import ua.hudyma.repository.PropertyRepository;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -44,19 +45,33 @@ public class PropertyService {
                         "Property" + propertyId + " NOT found"));
     }
     public List<String> getPropertiesElement(String query) {
-        var index = switch (query){
+        return propertyRepository
+                .findAll()
+                .stream()
+                .map(Property::getAddress)
+                .map(extractAddressElement(getIndex(query)))
+                .toList();
+    }
+    private static int getIndex(String query) {
+        return switch (query){
             case "cities" -> 1;
             case "countries" -> 2;
             default -> throw new IllegalArgumentException
                     ("query not recognised");
         };
+    }
+
+    public Function<String, String> extractAddressElement (Integer index){
+        return address -> address.split(",")[index].strip();
+    }
+    public List<PropertyRespDto> getAllByCity(String city) {
         return propertyRepository
                 .findAll()
                 .stream()
-                .map(Property::getAddress)
-                .map(address -> address.split(","))
-                .map(address -> address[index])
-                .map(String::strip)
+                .filter(property -> property.getAddress().split(",")[1].strip().equals(city))
+                //todo переробити предикат
+                .map(mapper::toDto)
                 .toList();
     }
+
 }

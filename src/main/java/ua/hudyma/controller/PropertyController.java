@@ -16,7 +16,8 @@ public class PropertyController {
     private final PropertyService propertyService;
 
     @PostMapping
-    public ResponseEntity<PropertyRespDto> addProperty (@RequestBody PropertyReqDto dto){
+    public ResponseEntity<PropertyRespDto> addProperty (
+            @RequestBody PropertyReqDto dto){
         return ResponseEntity.ok(propertyService.addProperty(dto));
     }
 
@@ -30,5 +31,11 @@ public class PropertyController {
     public ResponseEntity<List<String>> retrieveAddressElementFromProperties (
             @RequestParam String query){
         return ResponseEntity.ok(propertyService.getPropertiesElement(query));
+    }
+
+    @GetMapping("/getAllByCity")
+    public ResponseEntity<List<PropertyRespDto>> getAllByCity (
+            @RequestParam String city){
+        return ResponseEntity.ok(propertyService.getAllByCity (city));
     }
 }
