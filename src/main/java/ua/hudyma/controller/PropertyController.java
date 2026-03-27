@@ -25,4 +25,10 @@ public class PropertyController {
             @RequestParam String ownerId){
         return ResponseEntity.ok(propertyService.getPropertyList(ownerId));
     }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<String>> retrieveAddressElementFromProperties (
+            @RequestParam String query){
+        return ResponseEntity.ok(propertyService.getPropertiesElement(query));
+    }
 }

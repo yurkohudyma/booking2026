@@ -43,4 +43,20 @@ public class PropertyService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Property" + propertyId + " NOT found"));
     }
+    public List<String> getPropertiesElement(String query) {
+        var index = switch (query){
+            case "cities" -> 1;
+            case "countries" -> 2;
+            default -> throw new IllegalArgumentException
+                    ("query not recognised");
+        };
+        return propertyRepository
+                .findAll()
+                .stream()
+                .map(Property::getAddress)
+                .map(address -> address.split(","))
+                .map(address -> address[index])
+                .map(String::strip)
+                .toList();
+    }
 }

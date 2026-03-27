@@ -58,7 +58,6 @@ public class Property {
     private Geolocation geolocation;
 
     private BigDecimal rating = BigDecimal.ZERO;
-    //to be recalculated upon visitors review assessment
 
     @ToString.Exclude
     @OneToMany(mappedBy = "property",
@@ -71,7 +70,4 @@ public class Property {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Room> roomList = new ArrayList<>();
-
-
-
 }

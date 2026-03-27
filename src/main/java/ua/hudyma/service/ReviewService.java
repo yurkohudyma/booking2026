@@ -18,14 +18,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @Log4j2
 public class ReviewService {
+
     private final ReviewRepository reviewRepository;
+
     private final ReviewMapper reviewMapper;
+
     private final PropertyService propertyService;
 
     public ReviewRespDto createReview(ReviewReqDto dto) {
         var review = reviewMapper.toEntity(dto);
         reviewRepository.save(review);
-        validateRatingCalculateAndUpdateProperty(dto.rating(), getBookingCode(review), getPropertyCode(review));
+        validateRatingCalculateAndUpdateProperty(
+                dto.rating(),
+                getBookingCode(review),
+                getPropertyCode(review));
         return reviewMapper.toDto(review);
     }
 
@@ -37,25 +43,26 @@ public class ReviewService {
         return review.getBooking().getBookingCode();
     }
 
-    private void validateRatingCalculateAndUpdateProperty(Integer rating,
-                                                          String bookingCode,
-                                                          String propertyCode) {
-        if (rating != null && (rating > 10 || rating <= 0)){
-            log.warn(" ---> Rating " + rating + " for booking = " + bookingCode + "" +
-                    " is OUT OF BOUNDS [1-10], not accountable");
+    private void validateRatingCalculateAndUpdateProperty(
+            Integer rating, String bookingCode, String propertyCode) {
+        if (rating == null) {
+            log.error("Rating is NULL");
+        } else if (rating > 10 || rating <= 0) {
+            log.warn(" ---> Rating {} for booking = {} " +
+                    "is OUT OF BOUNDS [1-10], not accountable", rating, bookingCode);
+        } else {
             calculateAvgPropertyRating(propertyCode);
         }
     }
 
     @Transactional
-    public BigDecimal calculateAvgPropertyRating(String propertyCode){
+    public BigDecimal calculateAvgPropertyRating(String propertyCode) {
         var property = propertyService.getProperty(propertyCode);
         var ratingsList = property
                 .getBookingList()
                 .stream()
                 .flatMap(booking -> booking.getReviewList().stream())
                 .map(Review::getRating)
-                .filter(rating -> rating > 0 && rating <= 10)
                 .toList();
         var rating = getAvg(ratingsList);
         if (!rating.equals(BigDecimal.ZERO)) property.setRating(rating);
