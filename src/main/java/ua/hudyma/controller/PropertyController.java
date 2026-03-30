@@ -38,4 +38,10 @@ public class PropertyController {
             @RequestParam String city){
         return ResponseEntity.ok(propertyService.getAllByCity (city));
     }
+
+    @GetMapping("/getAllByCountry")
+    public ResponseEntity<List<PropertyRespDto>> getAllByCountry (
+            @RequestParam String country){
+        return ResponseEntity.ok(propertyService.getAllByCountry (country));
+    }
 }

@@ -74,4 +74,15 @@ public class PropertyService {
                 .map(mapper::toDto)
                 .toList();
     }
+    public List<PropertyRespDto> getAllByCountry(String country) {
+        return propertyRepository
+                .findAll()
+                .stream()
+                .filter(property -> extractAddressElement(2)
+                        .apply(property.getAddress())
+                        .equals(country))
+                .map(mapper::toDto)
+                .toList();
+    }
+
 }
