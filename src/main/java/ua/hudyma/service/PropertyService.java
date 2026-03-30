@@ -22,7 +22,7 @@ public class PropertyService {
     private final UserService userService;
 
     @Transactional
-    public PropertyRespDto addProperty (PropertyReqDto dto){
+    public PropertyRespDto addProperty(PropertyReqDto dto) {
         var property = mapper.toEntity(dto);
         var owner = userService.getUser(dto.ownerId());
         propertyRepository.save(property);
@@ -44,6 +44,7 @@ public class PropertyService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Property" + propertyId + " NOT found"));
     }
+
     public List<String> getPropertiesElement(String query) {
         return propertyRepository
                 .findAll()
@@ -52,8 +53,9 @@ public class PropertyService {
                 .map(extractAddressElement(getIndex(query)))
                 .toList();
     }
+
     private static int getIndex(String query) {
-        return switch (query){
+        return switch (query) {
             case "cities" -> 1;
             case "countries" -> 2;
             default -> throw new IllegalArgumentException
@@ -61,28 +63,23 @@ public class PropertyService {
         };
     }
 
-    public Function<String, String> extractAddressElement (Integer index){
+    public Function<String, String> extractAddressElement(Integer index) {
         return address -> address.split(",")[index].strip();
     }
-    public List<PropertyRespDto> getAllByCity(String city) {
-        return propertyRepository
-                .findAll()
-                .stream()
-                .filter(property -> extractAddressElement(1)
-                        .apply(property.getAddress())
-                        .equals(city))
-                .map(mapper::toDto)
-                .toList();
-    }
-    public List<PropertyRespDto> getAllByCountry(String country) {
-        return propertyRepository
-                .findAll()
-                .stream()
-                .filter(property -> extractAddressElement(2)
-                        .apply(property.getAddress())
-                        .equals(country))
-                .map(mapper::toDto)
-                .toList();
-    }
 
+    public List<PropertyRespDto> getAllBy(String query, String object) {
+        var index = switch (object) {
+            case "city" -> 1;
+            case "country" -> 2;
+            default -> throw new IllegalArgumentException("address field type is not recognised");
+        };
+        return propertyRepository
+                .findAll()
+                .stream()
+                .filter(property -> extractAddressElement(index)
+                        .apply(property.getAddress())
+                        .equals(query))
+                .map(mapper::toDto)
+                .toList();
+    }
 }
