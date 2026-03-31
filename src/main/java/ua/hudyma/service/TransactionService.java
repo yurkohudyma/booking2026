@@ -1,10 +1,11 @@
 package ua.hudyma.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Booking;
+import ua.hudyma.domain.Transaction;
 import ua.hudyma.dto.TransactionReqDto;
 import ua.hudyma.dto.TransactionRespDto;
 import ua.hudyma.enums.BookingStatus;
@@ -12,6 +13,9 @@ import ua.hudyma.mapper.TransactionMapper;
 import ua.hudyma.repository.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import static java.math.BigDecimal.ZERO;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,11 @@ public class TransactionService {
     @Transactional
     public TransactionRespDto createTransaction(TransactionReqDto dto) {
         var booking = bookingService.getBooking(dto.bookingId());
+        var debt = retrieveDebts(booking.getBookingCode());
+        if (debt.equals(ZERO) || debt.compareTo(ZERO) < 0){
+            throw new IllegalStateException
+                    ("Payment declined, booking has been paid in full");
+        }
         var user = booking.getUser();
         var transaction = transactionMapper.toEntity(dto);
         validateBookingPayment(booking, dto.amount());
@@ -34,20 +43,42 @@ public class TransactionService {
         return transactionMapper.toDto(transaction);
     }
 
-    private static void validateBookingPayment(
+    private void validateBookingPayment(
             Booking booking, BigDecimal txAmount) {
         var bookingAmount = booking.getCost();
         if (txAmount == null || bookingAmount == null) {
             throw new IllegalArgumentException
                     ("Booking amount or TxAmount are null");
         }
-        if (txAmount.compareTo(bookingAmount) >= 0){
+        var debt = retrieveDebts(booking.getBookingCode());
+        if (debt.equals(ZERO)){
             booking.setBookingStatus(BookingStatus.PAID);
             log.info(" ---> Booking payment has been provided in full");
         }
         else {
             log.warn(" ---> Booking payment has NOT been fully paid, {} is left to pay",
-                    bookingAmount.subtract(txAmount));
+                    debt);
         }
     }
+    @Transactional(readOnly = true)
+    public BigDecimal retrieveDebts(String bookingCode) {
+        var booking = bookingService.getBooking(bookingCode);
+        var transactionList = transactionRepository
+                .findAllByBookingId(booking.getId());
+        var overallSum = transactionList
+                .stream()
+                .map(Transaction::getAmount)
+                .reduce(ZERO, BigDecimal::add);
+        return booking.getCost().subtract(overallSum);
+    }
+    @Transactional(readOnly = true)
+    public List<TransactionRespDto> getAllTx(String bookingCode) {
+        var bookingId = bookingService.getBooking(bookingCode).getId();
+        return transactionRepository
+                .findAllByBookingId(bookingId)
+                .stream()
+                .map(transactionMapper::toDto)
+                .toList();
+    }
+
 }
