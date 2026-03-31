@@ -55,6 +55,12 @@ public class Booking {
             orphanRemoval = true)
     private List<Review> reviewList;
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "booking",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Transaction> transactionList;
+
     Integer additionalVisitorsCount = 0;
 
     @Enumerated(value = EnumType.STRING)
