@@ -7,6 +7,7 @@ import ua.hudyma.dto.PropertyReqDto;
 import ua.hudyma.dto.PropertyRespDto;
 import ua.hudyma.service.PropertyService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -43,5 +44,11 @@ public class PropertyController {
     public ResponseEntity<List<PropertyRespDto>> getAllByCountry (
             @RequestParam String q){
         return ResponseEntity.ok(propertyService.getAllBy (q, "country"));
+    }
+
+    @GetMapping("/getAllByRating")
+    public ResponseEntity<List<PropertyRespDto>> getAllByRating (
+            @RequestParam BigDecimal rating){
+        return ResponseEntity.ok(propertyService.getAllByRating(rating));
     }
 }

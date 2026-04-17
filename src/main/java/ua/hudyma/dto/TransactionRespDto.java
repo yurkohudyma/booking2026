@@ -9,7 +9,7 @@ public record TransactionRespDto(
         String userName,
         TransactionStatus transactionStatus,
         BigDecimal bookingCost,
-        BigDecimal txAmount
+        BigDecimal txAmountpp
 ) {
 
 }

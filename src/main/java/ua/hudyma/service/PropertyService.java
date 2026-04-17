@@ -10,6 +10,7 @@ import ua.hudyma.dto.PropertyRespDto;
 import ua.hudyma.mapper.PropertyMapper;
 import ua.hudyma.repository.PropertyRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 
@@ -79,6 +80,13 @@ public class PropertyService {
                 .filter(property -> extractAddressElement(index)
                         .apply(property.getAddress())
                         .equals(query))
+                .map(mapper::toDto)
+                .toList();
+    }
+    public List<PropertyRespDto> getAllByRating(BigDecimal rating) {
+        return propertyRepository
+                .findAllByRatingGreaterThanEqual(rating)
+                .stream()
                 .map(mapper::toDto)
                 .toList();
     }
