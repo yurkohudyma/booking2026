@@ -13,6 +13,7 @@ public record PropertyRespDto(
         PropertyType propertyType,
         String address,
         Geolocation geolocation,
+        Double distanceFromCenter,
         BigDecimal rating,
         LocalDateTime registeredOn,
         LocalDateTime renewedOn,

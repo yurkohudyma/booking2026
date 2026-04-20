@@ -2,11 +2,9 @@ package ua.hudyma.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.UuidGenerator;
 import ua.hudyma.enums.TransactionStatus;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static ua.hudyma.enums.TransactionStatus.PENDING;
 

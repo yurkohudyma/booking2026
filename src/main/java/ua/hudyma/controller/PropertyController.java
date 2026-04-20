@@ -51,4 +51,16 @@ public class PropertyController {
             @RequestParam BigDecimal rating){
         return ResponseEntity.ok(propertyService.getAllByRating(rating));
     }
+
+    @GetMapping("/getAllByDistanceFromCityCenter")
+    public ResponseEntity<List<PropertyRespDto>> getAllByDistanceFromCityCenter (
+            @RequestParam Double distance) {
+        return ResponseEntity.ok(propertyService.getAllByDistanceFromCityCenter(distance));
+    }
+
+    @GetMapping("/getDistanceFromCenter")
+    public ResponseEntity<Double> getDistanceFromCenter (
+            @RequestParam String propertyCode) {
+        return ResponseEntity.ok(propertyService.getDistanceFromCenter(propertyCode));
+    }
 }

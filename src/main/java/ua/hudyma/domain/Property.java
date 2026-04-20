@@ -57,6 +57,8 @@ public class Property {
     @Column(columnDefinition = "json", name = "geolocation")
     private Geolocation geolocation;
 
+    private Double distanceFromCenter;
+
     private BigDecimal rating = BigDecimal.ZERO;
 
     @ToString.Exclude

@@ -25,6 +25,7 @@ public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, Proper
                 property.getPropertyType(),
                 property.getAddress(),
                 property.getGeolocation(),
+                property.getDistanceFromCenter(),
                 property.getRating(),
                 property.getRegisteredOn(),
                 property.getRenewedOn(),
@@ -43,6 +44,7 @@ public class PropertyMapper extends BaseMapper<PropertyRespDto, Property, Proper
         property.setUser(user);
         property.setGeolocation(dto.geolocation());
         property.setRating(BigDecimal.ZERO);
+        property.setDistanceFromCenter(dto.distanceFromCenter());
         return property;
     }
 }

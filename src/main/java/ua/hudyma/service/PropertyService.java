@@ -5,10 +5,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Property;
-import ua.hudyma.dto.PropertyReqDto;
-import ua.hudyma.dto.PropertyRespDto;
+import ua.hudyma.dto.*;
+import ua.hudyma.enums.CityCenters;
 import ua.hudyma.mapper.PropertyMapper;
 import ua.hudyma.repository.PropertyRepository;
+import ua.hudyma.util.DistanceCalculator;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,8 +19,11 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Log4j2
 public class PropertyService {
+
     private final PropertyMapper mapper;
+
     private final PropertyRepository propertyRepository;
+
     private final UserService userService;
 
     @Transactional
@@ -89,5 +93,42 @@ public class PropertyService {
                 .stream()
                 .map(mapper::toDto)
                 .toList();
+    }
+    public List<PropertyRespDto> getAllByDistanceFromCityCenter(Double distance) {
+        return propertyRepository
+                .findAllByDistanceFromCenterLessThanEqual(distance)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public Double getDistanceFromCenter(String propertyCode) {
+        var property = getProperty(propertyCode);
+        var propertyLocation = convertToDoubleGeoLocation(property.getGeolocation());
+        var cityCenterLocation = getCityCenterLocation(property.getAddress());
+        var distance = DistanceCalculator.haversine(
+                new DistanceDto(
+                        propertyLocation.latitude(),
+                        propertyLocation.longitude(),
+                        cityCenterLocation.latitude(),
+                        cityCenterLocation.longitude()));
+        property.setDistanceFromCenter(distance);
+        return distance;
+    }
+
+    private DoubleGeolocation getCityCenterLocation(String address) {
+        var city = extractAddressElement(1).apply(address).toUpperCase();
+        var lat = CityCenters.valueOf(city).getLatitude();
+        var lon = CityCenters.valueOf(city).getLongitude();
+        return new DoubleGeolocation(lat, lon);
+    }
+
+    private DoubleGeolocation convertToDoubleGeoLocation(Geolocation geolocation) {
+        if (geolocation == null)
+            throw new IllegalArgumentException("Cannot calculate, geolocation is NULL");
+        return new DoubleGeolocation(
+                geolocation.latitude().doubleValue(),
+                geolocation.longitude().doubleValue());
     }
 }

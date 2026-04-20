@@ -13,4 +13,6 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     List<Property> findAllByRatingGreaterThanEqual(BigDecimal rating);
 
+    List<Property> findAllByDistanceFromCenterLessThanEqual(Double distance);
+
 }
