@@ -14,7 +14,6 @@ import ua.hudyma.util.DistanceCalculator;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -27,6 +26,7 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
 
     private final UserService userService;
+    private final BookingService bookingService;
 
     @Transactional
     public PropertyRespDto addProperty(PropertyReqDto dto) {
@@ -106,10 +106,14 @@ public class PropertyService {
                 .map(mapper::toDto)
                 .toList();
     }
-    private boolean isRegistered(String city) {
+    private static boolean isRegistered(String city) {
         return Arrays
                 .stream(CityCenters.values())
                 .anyMatch(constant -> constant.name().equalsIgnoreCase(city));
+    }
+
+    private static void validateCityName(String city){
+        if (!isRegistered(city)) throw new IllegalArgumentException(city + "not REGISTERED");
     }
 
     @Transactional
@@ -141,4 +145,28 @@ public class PropertyService {
                 geolocation.latitude().doubleValue(),
                 geolocation.longitude().doubleValue());
     }
+    public List<PropertyRespDto> getAllVacantByCityAndPeriod(VacantPropertyReqDto dto) {
+        //todo implement
+        var city = dto.city();
+        var start = dto.start();
+        var finish = dto.finish();
+        bookingService.checkDatesConsistency(start, finish);
+        validateCityName(city);
+        var propertyList = getAllBy("city", city);
+        //todo find all properties bookings by period
+        // which has rooms available i.e. without bookings
+
+        return List.of();
+    }
+
+    /*
+    select
+        start, finish, room_code, p.name
+            FROM booking2026.bookings b
+	            join property p on b.property_id = p.id
+		            join rooms r on b.room_id = r.id
+			            where start > "2026-03-20"
+ 				            and finish <= "2026-03-22"
+     */
+
 }

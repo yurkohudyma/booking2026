@@ -16,8 +16,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
 
-import static java.time.LocalTime.now;
-
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -53,7 +51,7 @@ public class BookingService {
         }
         var maxCapacity = room.getMaxVisitorsCapacity();
         checkCapacity(dto, maxCapacity);
-        checkDatesConsistency(dto);
+        checkDatesConsistency(dto.start(), dto.finish());
         checkRoomAvailability(room, dto);
         var visitorsCount = dto.visitorsCount();
         var roomCost = room.getCost();
@@ -73,14 +71,14 @@ public class BookingService {
         return bookingMapper.toDto(booking);
     }
 
-    private static void checkDatesConsistency(BookingReqDto dto) {
-        if (dto.start() == null) throw new IllegalArgumentException("Start date is not provided");
-        else if (dto.finish() == null) throw new IllegalArgumentException("Finish date is not provided");
-        else if (dto.start().isEqual(dto.finish())) throw new IllegalArgumentException
+    void checkDatesConsistency(LocalDate start, LocalDate finish) {
+        if (start == null) throw new IllegalArgumentException("Start date is not provided");
+        else if (finish == null) throw new IllegalArgumentException("Finish date is not provided");
+        else if (start.isEqual(finish)) throw new IllegalArgumentException
                 ("Start and finish date shall at least differ by 1 day");
-        else if (dto.finish().isBefore(dto.start())) {
+        else if (finish.isBefore(start)) {
             throw new IllegalArgumentException("Finish date shall not be prior to start");
-        } else if (dto.start().isBefore(LocalDate.now()) || dto.finish().isBefore(LocalDate.now())) {
+        } else if (start.isBefore(LocalDate.now()) || finish.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Start and-or finish dates cannot be in the past");
         }
     }

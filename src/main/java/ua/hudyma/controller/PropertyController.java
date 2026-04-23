@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hudyma.dto.PropertyReqDto;
 import ua.hudyma.dto.PropertyRespDto;
+import ua.hudyma.dto.VacantPropertyReqDto;
 import ua.hudyma.service.PropertyService;
 
 import java.math.BigDecimal;
@@ -65,5 +66,11 @@ public class PropertyController {
             @RequestParam String propertyCode) {
         return ResponseEntity.ok(propertyService
                 .getDistanceFromCenter(propertyCode));
+    }
+
+    @PostMapping("/getAllVacantByCity")
+    public ResponseEntity<List<PropertyRespDto>> getAllVacantPropertiesByCityAndPeriod(
+            @RequestBody VacantPropertyReqDto dto){
+        return ResponseEntity.ok(propertyService.getAllVacantByCityAndPeriod(dto));
     }
 }
