@@ -54,13 +54,16 @@ public class PropertyController {
 
     @GetMapping("/getAllByDistanceFromCityCenter")
     public ResponseEntity<List<PropertyRespDto>> getAllByDistanceFromCityCenter (
+            @RequestParam String city,
             @RequestParam Double distance) {
-        return ResponseEntity.ok(propertyService.getAllByDistanceFromCityCenter(distance));
+        return ResponseEntity.ok(propertyService
+                .getAllByDistanceFromCityCenter(city, distance));
     }
 
     @GetMapping("/getDistanceFromCenter")
     public ResponseEntity<Double> getDistanceFromCenter (
             @RequestParam String propertyCode) {
-        return ResponseEntity.ok(propertyService.getDistanceFromCenter(propertyCode));
+        return ResponseEntity.ok(propertyService
+                .getDistanceFromCenter(propertyCode));
     }
 }

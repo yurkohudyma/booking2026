@@ -12,7 +12,9 @@ import ua.hudyma.repository.PropertyRepository;
 import ua.hudyma.util.DistanceCalculator;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Service
@@ -94,12 +96,20 @@ public class PropertyService {
                 .map(mapper::toDto)
                 .toList();
     }
-    public List<PropertyRespDto> getAllByDistanceFromCityCenter(Double distance) {
+    public List<PropertyRespDto> getAllByDistanceFromCityCenter(String city, Double distance) {
+        if (!isRegistered(city)) throw new IllegalArgumentException(city + " not REGISTERED");
         return propertyRepository
                 .findAllByDistanceFromCenterLessThanEqual(distance)
                 .stream()
+                .filter(prop ->
+                        extractAddressElement(1).apply(prop.getAddress()).equals(city))
                 .map(mapper::toDto)
                 .toList();
+    }
+    private boolean isRegistered(String city) {
+        return Arrays
+                .stream(CityCenters.values())
+                .anyMatch(constant -> constant.name().equalsIgnoreCase(city));
     }
 
     @Transactional
