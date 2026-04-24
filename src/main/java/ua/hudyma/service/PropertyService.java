@@ -156,17 +156,18 @@ public class PropertyService {
         //todo find all properties bookings by period
         // which has rooms available i.e. without bookings
 
+
         return List.of();
     }
 
     /*
-    select
-        start, finish, room_code, p.name
-            FROM booking2026.bookings b
-	            join property p on b.property_id = p.id
-		            join rooms r on b.room_id = r.id
-			            where start > "2026-03-20"
- 				            and finish <= "2026-03-22"
+    SELECT
+    start, finish, room_code, p.name
+	FROM booking2026.bookings b
+		JOIN property p ON b.property_id = p.id
+			JOIN rooms r ON b.room_id = r.id
+				WHERE finish <= '2026-03-26'
+					OR start >= '2026-03-27';
      */
 
 }
