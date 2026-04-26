@@ -31,6 +31,8 @@ public class BookingService {
 
     private final UserService userService;
 
+    private final DateService dateService;
+
     public Booking getBooking(String bookingCode) {
         return bookingRepository
                 .findByBookingCode(bookingCode)
@@ -51,7 +53,7 @@ public class BookingService {
         }
         var maxCapacity = room.getMaxVisitorsCapacity();
         checkCapacity(dto, maxCapacity);
-        checkDatesConsistency(dto.start(), dto.finish());
+        dateService.checkDatesConsistency(dto.start(), dto.finish());
         checkRoomAvailability(room, dto);
         var visitorsCount = dto.visitorsCount();
         var roomCost = room.getCost();
@@ -69,18 +71,6 @@ public class BookingService {
         property.getBookingList().add(booking);
         room.getBookingList().add(booking);
         return bookingMapper.toDto(booking);
-    }
-
-    void checkDatesConsistency(LocalDate start, LocalDate finish) {
-        if (start == null) throw new IllegalArgumentException("Start date is not provided");
-        else if (finish == null) throw new IllegalArgumentException("Finish date is not provided");
-        else if (start.isEqual(finish)) throw new IllegalArgumentException
-                ("Start and finish date shall at least differ by 1 day");
-        else if (finish.isBefore(start)) {
-            throw new IllegalArgumentException("Finish date shall not be prior to start");
-        } else if (start.isBefore(LocalDate.now()) || finish.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Start and-or finish dates cannot be in the past");
-        }
     }
 
     private static Long calculationBookingDuration(LocalDate start, LocalDate finish) {

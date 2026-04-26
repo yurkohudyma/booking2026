@@ -26,7 +26,9 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
 
     private final UserService userService;
-    private final BookingService bookingService;
+    private final DateService dateService;
+
+    //private final BookingService bookingService; circular
 
     @Transactional
     public PropertyRespDto addProperty(PropertyReqDto dto) {
@@ -150,7 +152,7 @@ public class PropertyService {
         var city = dto.city();
         var start = dto.start();
         var finish = dto.finish();
-        bookingService.checkDatesConsistency(start, finish);
+        dateService.checkDatesConsistency(start, finish);
         validateCityName(city);
         var propertyList = getAllBy("city", city);
         //todo find all properties bookings by period
