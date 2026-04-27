@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.hudyma.domain.Booking;
 import ua.hudyma.domain.Property;
 import ua.hudyma.dto.*;
 import ua.hudyma.enums.CityCenters;
 import ua.hudyma.mapper.PropertyMapper;
+import ua.hudyma.repository.BookingRepository;
 import ua.hudyma.repository.PropertyRepository;
 import ua.hudyma.util.DistanceCalculator;
 
@@ -27,6 +29,7 @@ public class PropertyService {
 
     private final UserService userService;
     private final DateService dateService;
+    private final BookingRepository bookingRepository;
 
     //private final BookingService bookingService; circular
 
@@ -76,19 +79,27 @@ public class PropertyService {
         return address -> address.split(",")[index].strip();
     }
 
-    public List<PropertyRespDto> getAllBy(String query, String object) {
+    public List<?> getAllBy(String query, String object, boolean mapToDto) {
         var index = switch (object) {
             case "city" -> 1;
             case "country" -> 2;
             default -> throw new IllegalArgumentException("address field type is not recognised");
         };
-        return propertyRepository
+        return mapToDto ? propertyRepository
                 .findAll()
                 .stream()
                 .filter(property -> extractAddressElement(index)
                         .apply(property.getAddress())
                         .equals(query))
                 .map(mapper::toDto)
+                .toList() :
+
+                propertyRepository
+                .findAll()
+                .stream()
+                .filter(property -> extractAddressElement(index)
+                                    .apply(property.getAddress())
+                                    .equals(query))
                 .toList();
     }
     public List<PropertyRespDto> getAllByRating(BigDecimal rating) {
@@ -147,19 +158,23 @@ public class PropertyService {
                 geolocation.latitude().doubleValue(),
                 geolocation.longitude().doubleValue());
     }
+
+
     public List<PropertyRespDto> getAllVacantByCityAndPeriod(VacantPropertyReqDto dto) {
-        //todo implement
         var city = dto.city();
         var start = dto.start();
         var finish = dto.finish();
-        dateService.checkDatesConsistency(start, finish);
+        //dateService.checkDatesConsistency(start, finish);
         validateCityName(city);
-        var propertyList = getAllBy("city", city);
-        //todo find all properties bookings by period
-        // which has rooms available i.e. without bookings
-
-
-        return List.of();
+        List<?> propertyListByCity = getAllBy(city, "city", false);
+        List<Booking> bookingListByPeriod = bookingRepository
+                .findByFinishLessThanEqualOrStartGreaterThanEqual(start, finish);
+        return bookingListByPeriod
+                .stream()
+                .map(Booking::getProperty)
+                .filter(propertyListByCity::contains)
+                .map(mapper::toDto)
+                .toList();
     }
 
     /*

@@ -36,15 +36,15 @@ public class PropertyController {
     }
 
     @GetMapping("/getAllByCity")
-    public ResponseEntity<List<PropertyRespDto>> getAllByCity (
+    public ResponseEntity<List<?>> getAllByCity (
             @RequestParam String q){
-        return ResponseEntity.ok(propertyService.getAllBy (q, "city"));
+        return ResponseEntity.ok(propertyService.getAllBy (q, "city", true));
     }
 
     @GetMapping("/getAllByCountry")
-    public ResponseEntity<List<PropertyRespDto>> getAllByCountry (
+    public ResponseEntity<List<?>> getAllByCountry (
             @RequestParam String q){
-        return ResponseEntity.ok(propertyService.getAllBy (q, "country"));
+        return ResponseEntity.ok(propertyService.getAllBy (q, "country", true));
     }
 
     @GetMapping("/getAllByRating")
