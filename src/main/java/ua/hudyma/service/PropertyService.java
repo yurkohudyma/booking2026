@@ -126,7 +126,7 @@ public class PropertyService {
     }
 
     private static void validateCityName(String city){
-        if (!isRegistered(city)) throw new IllegalArgumentException(city + "not REGISTERED");
+        if (!isRegistered(city)) throw new IllegalArgumentException(city + " not REGISTERED");
     }
 
     @Transactional
@@ -172,19 +172,23 @@ public class PropertyService {
         return bookingListByPeriod
                 .stream()
                 .map(Booking::getProperty)
-                .filter(propertyListByCity::contains)
+                .filter(propertyListByCity::contains) //requires equals() overriden
                 .map(mapper::toDto)
                 .toList();
     }
 
     /*
     SELECT
-    start, finish, room_code, p.name
+ start,
+ finish,
+room_code,
+ p.name
 	FROM booking2026.bookings b
-		JOIN property p ON b.property_id = p.id
-			JOIN rooms r ON b.room_id = r.id
-				WHERE finish <= '2026-03-26'
-					OR start >= '2026-03-27';
+		 JOIN property p ON b.property_id = p.id
+			 JOIN rooms r ON b.room_id = r.id
+				-- where p.address like '%Split%'
+                and (finish <= '2026-03-19'
+					 OR start >= '2026-03-29');
      */
 
 }

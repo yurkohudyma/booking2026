@@ -72,4 +72,12 @@ public class Property {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Room> roomList = new ArrayList<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Property that)) return false;
+        return propertyCode != null &&
+                propertyCode.equals(that.propertyCode);
+    }
 }
