@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hudyma.domain.Booking;
 import ua.hudyma.domain.Room;
+import ua.hudyma.domain.Transaction;
 import ua.hudyma.dto.BookingReqDto;
 import ua.hudyma.dto.BookingRespDto;
+import ua.hudyma.enums.BookingStatus;
 import ua.hudyma.mapper.BookingMapper;
 import ua.hudyma.repository.BookingRepository;
 
@@ -15,6 +17,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Predicate;
+
+import static ua.hudyma.enums.BookingStatus.*;
+import static ua.hudyma.enums.BookingStatus.CANCELLED_BY_VISITOR;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,8 @@ public class BookingService {
     private final UserService userService;
 
     private final DateService dateService;
+
+    // private final TransactionService transactionService; circular
 
     public Booking getBooking(String bookingCode) {
         return bookingRepository
@@ -101,6 +108,20 @@ public class BookingService {
                     " is already booked from " + existBookingOpt.getStart() + " till " +
                     existBookingOpt.getFinish() + " by " + existBookingOpt.getUser().getName());
         }
+    }
+
+    @Transactional
+    public BookingRespDto cancelBooking(String bookingCode) {
+        var booking = getBooking(bookingCode);
+        var bookingStatus = booking.getBookingStatus();
+        if (bookingStatus == CANCELLED_BY_VISITOR) {
+            throw new IllegalArgumentException("Booking ALREADY cancelled by visitor");
+        }
+        else if (bookingStatus == PAID) {
+            //transactionService.refundBookingPayment(bookingCode);
+        }
+        booking.setBookingStatus(CANCELLED_BY_VISITOR);
+        return bookingMapper.toDto(booking);
     }
 
 }
