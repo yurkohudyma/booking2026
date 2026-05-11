@@ -38,6 +38,8 @@ public class BookingService {
 
     private final DateService dateService;
 
+    private final RefundService refundService;
+
     // private final TransactionService transactionService; circular
 
     public Booking getBooking(String bookingCode) {
@@ -118,7 +120,7 @@ public class BookingService {
             throw new IllegalArgumentException("Booking ALREADY cancelled by visitor");
         }
         else if (bookingStatus == PAID) {
-            //transactionService.refundBookingPayment(bookingCode);
+            refundService.refundBookingPayment(booking);
         }
         booking.setBookingStatus(CANCELLED_BY_VISITOR);
         return bookingMapper.toDto(booking);

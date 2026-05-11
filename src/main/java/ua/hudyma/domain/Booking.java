@@ -67,5 +67,6 @@ public class Booking {
     private BookingStatus bookingStatus = BookingStatus.CONFIRMED;
 
     private BigDecimal cost;
+    private BigDecimal refunded;
 
 }

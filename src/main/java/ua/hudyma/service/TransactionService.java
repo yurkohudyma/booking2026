@@ -80,8 +80,4 @@ public class TransactionService {
                 .map(transactionMapper::toDto)
                 .toList();
     }
-
-    public void refundBookingPayment(String bookingCode) {
-    }
-
 }
